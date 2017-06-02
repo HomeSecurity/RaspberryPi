@@ -8,16 +8,19 @@ import java.util.Date;
 public class Aktor extends Component{
     private boolean isActivated;
 
-    public Aktor(int id) {
-        super(id);
+    public Aktor(int id, double voltage) {
+        super(id, voltage);
     }
 
     public void activate(){
-        isActivated = true;
-        history.put(new Date(), true);
+        send(true);
     }
     public void disable(){
-        isActivated = false;
-        history.put(new Date(), false);
+        send(false);
+    }
+    private void send(boolean data){
+        isActivated = data;
+        history.put(new Date(), data);
+        //implement sending here @Armin
     }
 }

@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ public class Alarmsystem {
         return Alarmsystem.instance;
     }
     private Map<Integer, Component> components = new HashMap<Integer, Component>();
+    private Map<Integer, Rule> rules = new HashMap<Integer, Rule>();
     public boolean removeComponent(int id){
         if (components.containsKey(id)) {
             components.remove(id);
@@ -34,6 +36,7 @@ public class Alarmsystem {
 
         int id = 5;
         int type = 0;
+        double voltage = 3.0;
         //1000 Tür
         //1001 Bewegungssensor
         //2000 Sirene
@@ -41,16 +44,16 @@ public class Alarmsystem {
         Component newComponent;
         switch(type){
             case 1000:
-                newComponent = new DoorSensor(id);
+                newComponent = new DoorSensor(id, voltage);
                 break;
             case 1001:
-                newComponent = new MotionSensor(id);
+                newComponent = new MotionSensor(id, voltage);
                 break;
             case 2000:
-                newComponent = new Sirene(id);
+                newComponent = new Sirene(id, voltage);
                 break;
             case 2001:
-                newComponent = new Steckdose(id);
+                newComponent = new Steckdose(id, voltage);
                 break;
                 default:
                     return false;
@@ -58,7 +61,24 @@ public class Alarmsystem {
         components.put(newComponent.getId(), newComponent);
         return true;
     }
+    public void newRule(){
+        Rule rule = new Rule();
+        rules.put(rule.getId(), rule);
+    }
+    public boolean addComponentToRule(int ruleId, int componendId, boolean value){
+        Component comp = Alarmsystem.getInstance().getComponentById(componendId);
+        Rule rule = Alarmsystem.getInstance().getRulebyId(ruleId);
+        return rule.addComponent(comp,value);
+    }
+    public boolean removeComponentFromRule(int ruleId, int componentId, boolean value){
+        Component comp = Alarmsystem.getInstance().getComponentById(componentId);
+        Rule rule = Alarmsystem.getInstance().getRulebyId(ruleId);
+        return rule.removeComponent(comp, value);
+    }
 
+    public Rule getRulebyId(int id){
+        return rules.get(id);
+    }
 
 
 
