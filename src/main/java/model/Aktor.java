@@ -1,11 +1,12 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Jonas on 29.05.2017.
  */
-public class Aktor extends Component{
+public class Aktor extends Component implements Serializable{
     private boolean isActivated;
 
     @Override
