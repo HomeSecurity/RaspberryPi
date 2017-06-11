@@ -7,4 +7,5 @@ public class Steckdose extends Aktor {
     public Steckdose(int id, double voltage){
         super(id, voltage);
     }
+
 }

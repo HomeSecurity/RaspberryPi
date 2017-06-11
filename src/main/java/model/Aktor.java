@@ -8,6 +8,11 @@ import java.util.Date;
 public class Aktor extends Component{
     private boolean isActivated;
 
+    @Override
+    public boolean isSensor() {
+        return false;
+    }
+
     public Aktor(int id, double voltage) {
         super(id, voltage);
     }
@@ -18,9 +23,11 @@ public class Aktor extends Component{
     public void disable(){
         send(false);
     }
+
     private void send(boolean data){
         isActivated = data;
         history.put(new Date(), data);
         //implement sending here @Armin
     }
+
 }

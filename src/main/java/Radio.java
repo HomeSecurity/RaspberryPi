@@ -8,6 +8,9 @@ import com.pi4j.io.serial.SerialConfig;
 import com.pi4j.io.serial.SerialDataEventListener;
 import com.pi4j.io.serial.SerialFactory;
 import com.pi4j.io.serial.StopBits;
+import com.sun.org.apache.bcel.internal.generic.ALOAD;
+import model.Alarmsystem;
+import model.Sensor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,18 +64,17 @@ class Radio {
 
         if (readings[0] == 0) {
             //registration message
-            for (RadioListener listener : listeners) {
-                listener.onRegistration(readings[1], readings[2], readings[3] / 1000.0);
-            }
+
+            Alarmsystem.getInstance().onRegistrationMessage(readings[1], readings[2], readings[3] / 1000.0);
+
             return;
         }
+        //data message
+        Alarmsystem.getInstance().onDataMessage(readings[0],readings[1] > 0,readings[2]);
 
-        for (RadioListener listener : listeners) {
-            listener.onData(readings[0], readings[1] > 0, readings[2] / 1000.0);
-        }
     }
 
     void addListener(RadioListener listener) {
-         listeners.add(listener);
+        listeners.add(listener);
     }
 }

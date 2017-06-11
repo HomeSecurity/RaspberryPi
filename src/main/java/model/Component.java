@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by Jonas on 29.05.2017.
  */
-public class Component {
+public abstract class Component {
     public int getId() {
         return id;
     }
@@ -21,6 +21,7 @@ public class Component {
     public void setVoltage(double voltage) {
         this.voltage = voltage;
     }
+    public abstract boolean isSensor();
 
     private double voltage;
 
@@ -34,4 +35,7 @@ public class Component {
         this.voltage = voltage;
     }
     protected Map<Date, Boolean> history = new HashMap<Date, Boolean>();
+    public String toJson(){
+        return Alarmsystem.getInstance().g.toJson(this);
+    }
 }

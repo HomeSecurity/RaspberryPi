@@ -16,6 +16,8 @@ public class Kamera extends Aktor {
     public Kamera(int id, double voltage) {
         super(id, voltage);
     }
+
+
     @Override
     public void activate(){
         //take picture with this ip adress

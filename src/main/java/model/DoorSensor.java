@@ -7,4 +7,5 @@ public class DoorSensor extends Sensor {
     public DoorSensor(int id, double voltage){
         super(id, voltage);
     }
+
 }

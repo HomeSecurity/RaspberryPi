@@ -8,5 +8,4 @@ public class MotionSensor extends Sensor {
         super(id, voltage);
     }
 
-
 }

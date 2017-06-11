@@ -67,7 +67,14 @@ public class Rule {
             return input.remove(comp, value);
         }
     }
-
+    public void executeAlarm(){
+        for(Map.Entry<Aktor, Boolean> aktor : output.entrySet()){
+            aktor.getKey().activate();
+        }
+    }
+    public String toJson(){
+        return Alarmsystem.getInstance().g.toJson(this);
+    }
 
 
 

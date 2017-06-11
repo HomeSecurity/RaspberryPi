@@ -6,6 +6,11 @@ import java.util.Date;
  * Created by Jonas on 29.05.2017.
  */
 public class Sensor extends Component{
+    @Override
+    public boolean isSensor() {
+        return true;
+    }
+
     public Sensor(int id, double voltage) {
         super(id, voltage);
     }
