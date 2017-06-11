@@ -8,25 +8,27 @@ import com.pi4j.io.serial.SerialConfig;
 import com.pi4j.io.serial.SerialDataEventListener;
 import com.pi4j.io.serial.SerialFactory;
 import com.pi4j.io.serial.StopBits;
-import com.sun.org.apache.bcel.internal.generic.ALOAD;
-import model.Alarmsystem;
-import model.Sensor;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.charset.Charset;
+
+import model.Alarmsystem;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Created by Armin on 26.12.2016.
  */
 class Radio {
-    List<RadioListener> listeners;
-
     Radio() throws IOException {
-        listeners = new ArrayList<>();
         Serial serial = SerialFactory.createInstance();
         serial.addListener((SerialDataEventListener) event -> {
             try {
+                if (Charset.forName("US-ASCII").newEncoder().canEncode(event.getAsciiString())) {
+                    //debug / log
+                    System.out.println(event.getAsciiString());
+                }
+
                 onRead(event.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -43,6 +45,30 @@ class Radio {
 
         System.out.println("Connecting to: " + config);
         serial.open(config);
+
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    sleep(5000);
+                    //data format:
+                    //first char 0-5: sensorId (filled with leading 0) e.g. id:124 -> 00124
+                    //char 6: data (1 or 0)
+                    //char 7: 'a' = indicate the message is over
+                    String sensorId = "" + (int) (Math.random() * 65000);
+                    while (sensorId.length() < 5) {
+                        sensorId = "0" + sensorId;
+                    }
+                    boolean data = Math.random() > 0.5;
+                    System.out.println("SENDING TO AKTOR: id=" + sensorId + " data:" + data);
+                    serial.write(sensorId.toCharArray());
+                    serial.write(data ? '1' : '0');
+                    serial.write('a');
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     //todo filter readings from same sensor in very short time
@@ -56,25 +82,28 @@ class Radio {
         //parse (verified! tested every 2byte int value)
         int[] readings = new int[len / 2];
         for (int i = 0; i < len; i += 2) {
-            int byte1 = (256 + bytes[i]) % 256; //fix negative bytes ffs software serial !
-            int byte2 = (256 + bytes[i + 1]) % 256; //fix negative bytes ffs software serial !
+            int byte1 = (256 + bytes[i]) % 256; //fix unsigned (negative)
+            int byte2 = (256 + bytes[i + 1]) % 256; //fix unsigned (negative)
             int result = 256 * byte2 + byte1;
             readings[i / 2] = result;
         }
 
         if (readings[0] == 0) {
             //registration message
+            int sensorId = readings[1];
+            int type = readings[2];
+            double voltage = readings[3] / 1000.0;
+            System.out.println("SENSOR REGISTRATION: " + "sensorId: " + sensorId + " type: " + type + " voltage: " + voltage);
 
-            Alarmsystem.getInstance().onRegistrationMessage(readings[1], readings[2], readings[3] / 1000.0);
-
+            Alarmsystem.getInstance().onRegistrationMessage(sensorId, type, voltage);
             return;
         }
+
         //data message
-        Alarmsystem.getInstance().onDataMessage(readings[0],readings[1] > 0,readings[2]);
-
-    }
-
-    void addListener(RadioListener listener) {
-        listeners.add(listener);
+        int sensorId = readings[0];
+        boolean data = readings[1] > 0;
+        double voltage = readings[2] / 1000.0;
+        System.out.println("SENSOR DATA: " + "sensorId: " + sensorId + " data: " + data + " voltage: " + voltage);
+        Alarmsystem.getInstance().onDataMessage(sensorId, data, voltage);
     }
 }

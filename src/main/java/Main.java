@@ -10,7 +10,7 @@ import java.util.Arrays;
 /**
  * Created by Armin on 26.12.2016.
  */
-public class Main implements RadioListener {
+public class Main {
 
     public static void main(String[] args) throws Exception {
         new Main();
@@ -37,14 +37,8 @@ public class Main implements RadioListener {
         r.addComponent(Alarmsystem.getInstance().getComponentById(1), true);
         r.addComponent(Alarmsystem.getInstance().getComponentById(3), true);
         Alarmsystem.getInstance().persist();
-
-
-
+        
         Radio radio = new Radio();
-
-
-
-        radio.addListener(this);
     }
 
     private void printSystemInformation() throws IOException, InterruptedException {
@@ -52,15 +46,5 @@ public class Main implements RadioListener {
         System.out.println("CPU Temperature   :  " + SystemInfo.getCpuTemperature());
         System.out.println("Java Version      :  " + SystemInfo.getJavaVersion());
         System.out.println("IP Addresses      :  " + Arrays.toString(NetworkInfo.getIPAddresses()));
-    }
-
-    @Override
-    public void onData(int sensorId, boolean data, double voltage) {
-        System.out.println("DATA: " + "sensorId: " + sensorId + " data: " + data + " voltage: " + voltage);
-    }
-
-    @Override
-    public void onRegistration(int sensorId, int type, double voltage) {
-        System.out.println("REGISTRATION: " + "sensorId: " + sensorId + " type: " + type + " voltage: " + voltage);
     }
 }
