@@ -56,6 +56,7 @@ class Radio {
                     //char 6: data (1 or 0)
                     //char 7: 'a' = indicate the message is over
                     String sensorId = "" + (int) (Math.random() * 65000);
+                    //sensorId = "31558";
                     while (sensorId.length() < 5) {
                         sensorId = "0" + sensorId;
                     }
