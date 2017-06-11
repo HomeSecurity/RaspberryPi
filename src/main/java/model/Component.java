@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,7 +9,7 @@ import java.util.Map;
 /**
  * Created by Jonas on 29.05.2017.
  */
-public abstract class Component {
+public abstract class Component implements Serializable{
     public int getId() {
         return id;
     }
@@ -35,7 +36,4 @@ public abstract class Component {
         this.voltage = voltage;
     }
     protected Map<Date, Boolean> history = new HashMap<Date, Boolean>();
-    public String toJson(){
-        return Alarmsystem.getInstance().g.toJson(this);
-    }
 }

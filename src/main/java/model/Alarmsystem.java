@@ -32,76 +32,41 @@ public class Alarmsystem {
     }
 
     public void persist(){
-        //clear files
-        try {
-            new FileOutputStream("Sensors.json").write("".getBytes());
-            new FileOutputStream("Actors.json").write("".getBytes());
-            new FileOutputStream("Rules.json").write("".getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
-        //components
-        for(Component comp : components.values()){
-            String fileName;
-            if(comp.isSensor()) {
-                fileName = "Sensors";
-            }
-            else{
-                fileName = "Actors";
-            }
-            try {
-                new FileOutputStream(fileName + ".json", true).write((comp.toJson()+ "\n").getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        //rules
-        for(Rule rule : rules.values()){
-            try {
-                new FileOutputStream("Rules.json", true).write((rule.toJson() + "\n").getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try{
+            FileOutputStream fout = new FileOutputStream("components.ser", false);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+            oos.writeObject(components);
+            fout = new FileOutputStream("rules.ser", false);
+            oos = new ObjectOutputStream(fout);
+            oos.writeObject(rules);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
     public void init(){
+        ObjectInputStream objectinputstream = null;
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("Actors.json")));
-            String line;
-        while ((line = bufferedReader.readLine()) != null){
-            Aktor actor = g.fromJson(line,Aktor.class);
-            components.put(actor.getId(),actor);
-        }
-            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("Sensors.json")));
-            while ((line = bufferedReader.readLine()) != null){
-                Sensor sensor = g.fromJson(line,Sensor.class);
-                components.put(sensor.getId(),sensor);
-            }
-            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("Rules.json")));
-            while ((line = bufferedReader.readLine()) != null){
+            FileInputStream streamIn = new FileInputStream("components.ser");
+            objectinputstream = new ObjectInputStream(streamIn);
+            components = (Map<Integer, Component>) objectinputstream.readObject();
 
-                //doesnt work yet because json contains objects
-                //example: {"id":1,"input":{},"output":{"model.Sirene@4dcbadb4":true}}
-                Rule rule = g.fromJson(line,Rule.class);
-                rules.put(rule.getId(),rule);
+            streamIn = new FileInputStream("rules.ser");
+            objectinputstream = new ObjectInputStream(streamIn);
+            rules = (Map<Integer, Rule>) objectinputstream.readObject();
+
+            //adjust global rule Id for further rules
+            for (Rule rule : rules.values()){
+                if(Rule.globalId < rule.getId()){
+                    Rule.globalId = rule.getId() + 1;
+                }
             }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //MotionSensor fegit = g.fromJson(new BufferedReader(new InputStreamReader(new FileInputStream("fegit.json"))).readLine(),MotionSensor.class);
-
-
-
-
     }
 
 

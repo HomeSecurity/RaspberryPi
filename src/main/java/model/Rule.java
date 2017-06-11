@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +8,7 @@ import java.util.Map;
 /**
  * Created by D062452 on 02.06.2017.
  */
-public class Rule {
+public class Rule implements Serializable{
     public int getId() {
         return id;
     }
