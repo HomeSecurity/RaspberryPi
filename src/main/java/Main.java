@@ -18,12 +18,14 @@ public class Main {
     }
 
     private Main() throws IOException, InterruptedException {
-        //printSystemInformation();
+        printSystemInformation();
+
+        /*
         Gson g = new Gson();
         MotionSensor sensor = new MotionSensor(4,3.0);
         new FileOutputStream("fegit.json").write(g.toJson(sensor).getBytes());
         MotionSensor fegit = g.fromJson(new BufferedReader(new InputStreamReader(new FileInputStream("fegit.json"))).readLine(),MotionSensor.class);
-        System.out.println(fegit);
+
 
 
         Alarmsystem.getInstance().onRegistrationMessage(1,1000,2.0);
@@ -37,8 +39,10 @@ public class Main {
         r.addComponent(Alarmsystem.getInstance().getComponentById(1), true);
         r.addComponent(Alarmsystem.getInstance().getComponentById(3), true);
         Alarmsystem.getInstance().persist();
+        */
         
         Radio radio = new Radio();
+
     }
 
     private void printSystemInformation() throws IOException, InterruptedException {
