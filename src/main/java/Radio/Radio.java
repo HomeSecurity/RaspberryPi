@@ -1,3 +1,5 @@
+package Radio;
+
 import com.pi4j.io.serial.Baud;
 import com.pi4j.io.serial.DataBits;
 import com.pi4j.io.serial.FlowControl;
@@ -19,8 +21,8 @@ import static java.lang.Thread.sleep;
 /**
  * Created by Armin on 26.12.2016.
  */
-class Radio {
-    Radio() throws IOException {
+public class Radio {
+    public Radio() throws IOException {
         Serial serial = SerialFactory.createInstance();
         serial.addListener((SerialDataEventListener) event -> {
             try {
