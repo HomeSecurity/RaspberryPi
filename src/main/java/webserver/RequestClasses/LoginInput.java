@@ -1,4 +1,4 @@
-package webserver;
+package webserver.RequestClasses;
 
 /**
  * Created by Tim on 12.06.2017.

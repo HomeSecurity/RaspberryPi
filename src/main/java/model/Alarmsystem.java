@@ -27,14 +27,6 @@ public class Alarmsystem {
         return Alarmsystem.instance;
     }
 
-    public boolean removeComponent(int id){
-        if (components.containsKey(id)) {
-            components.remove(id);
-            return true;
-        }
-        return false;
-    }
-
     public void persist(){
         try{
             FileOutputStream fout = new FileOutputStream("components.ser", false);
@@ -70,12 +62,6 @@ public class Alarmsystem {
             e.printStackTrace();
         }
     }
-
-
-    public Component getComponentById(int id){
-        return components.get(id);
-    }
-
 
     public void onDataMessage(int sensorId, boolean data, double voltage) {
         Component comp = Alarmsystem.getInstance().getComponentById(sensorId);
@@ -153,8 +139,8 @@ public class Alarmsystem {
         Alarmsystem.getInstance().persist();
         return true;
     }
-    public Rule newRule(){
-        Rule rule = new Rule();
+    public Rule newRule(String name, boolean active){
+        Rule rule = new Rule(name, active);
         rules.put(rule.getId(), rule);
         //persist
         Alarmsystem.getInstance().persist();
@@ -188,11 +174,23 @@ public class Alarmsystem {
         return rules.get(id);
     }
 
-    public ArrayList<Rule> getAllRules(){
-        return (ArrayList<Rule>) rules.values();
+    public Map<Integer, Rule> getAllRules(){
+        return rules;
     }
-    public ArrayList<Component> getAllComponents(){
-        return (ArrayList<Component>) components.values();
+    public Map<Integer, Component> getAllComponents(){
+        return components;
+    }
+
+    public Component getComponentById(int id){
+        return components.get(id);
+    }
+
+    public boolean removeComponent(int id){
+        if (components.containsKey(id)) {
+            components.remove(id);
+            return true;
+        }
+        return false;
     }
 
     public void activateRegistrationMode(){

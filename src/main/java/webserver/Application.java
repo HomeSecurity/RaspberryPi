@@ -15,14 +15,14 @@ import java.io.IOException;
 public class Application {
 
     public static void main(String args[]) {
-        Rule r = Alarmsystem.getInstance().newRule();
+        Rule r = Alarmsystem.getInstance().newRule(null, false);
         r.addComponent(new Sensor(1, 0), true);
         r.addComponent(new Aktor(2, 0), true);
-        try {
+        /*try {
             Radio radio = new Radio();
         } catch(IOException e) {
             e.printStackTrace();
-        }
+        }*/
         SpringApplication.run(Application.class, args);
     }
 }
