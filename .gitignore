@@ -4,3 +4,4 @@ out/
 *.class
 out/
 target/
+*.ser
