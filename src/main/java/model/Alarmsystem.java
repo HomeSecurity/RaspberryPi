@@ -13,6 +13,12 @@ import java.util.Map;
 public class Alarmsystem {
     private static Alarmsystem instance;
     private Alarmsystem(){}
+    private Map<Integer, Component> components = new HashMap<Integer, Component>();
+    private Map<Integer, Rule> rules = new HashMap<Integer, Rule>();
+    private boolean registrationMode = false;
+
+
+
     public static Alarmsystem getInstance() {
         if (Alarmsystem.instance == null){
             Alarmsystem.instance = new Alarmsystem();
@@ -20,9 +26,7 @@ public class Alarmsystem {
         }
         return Alarmsystem.instance;
     }
-    private Map<Integer, Component> components = new HashMap<Integer, Component>();
-    private Map<Integer, Rule> rules = new HashMap<Integer, Rule>();
-    public Gson g = new Gson();
+
     public boolean removeComponent(int id){
         if (components.containsKey(id)) {
             components.remove(id);
@@ -32,8 +36,6 @@ public class Alarmsystem {
     }
 
     public void persist(){
-
-
         try{
             FileOutputStream fout = new FileOutputStream("components.ser", false);
             ObjectOutputStream oos = new ObjectOutputStream(fout);
@@ -116,6 +118,11 @@ public class Alarmsystem {
     }
 
     public boolean onRegistrationMessage(int id, int type, double voltage){
+        if(!registrationMode){
+            return false;
+        }
+
+
         //perform parsing the byte message
         // not sure if message is String or byte array
         //if invalid message return false
@@ -179,6 +186,29 @@ public class Alarmsystem {
 
     public Rule getRulebyId(int id){
         return rules.get(id);
+    }
+
+    public ArrayList<Rule> getAllRules(){
+        return (ArrayList<Rule>) rules.values();
+    }
+    public ArrayList<Component> getAllComponents(){
+        return (ArrayList<Component>) components.values();
+    }
+
+    public void activateRegistrationMode(){
+        new Thread(() -> {
+            Alarmsystem.getInstance().registrationMode = true;
+            try {
+                //sleep for 60sec
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+
+                e.printStackTrace();
+            }
+            finally {
+                Alarmsystem.getInstance().registrationMode = false;
+            }
+        }).start();
     }
 
 
