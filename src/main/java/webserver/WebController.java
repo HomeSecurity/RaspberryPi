@@ -1,10 +1,11 @@
 package webserver;
 
 import model.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 
 /**
  * Created by Tim on 10.06.2017.
@@ -13,13 +14,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WebController {
 
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public boolean login(HttpSession httpSession, @RequestBody LoginInput input) {
+        if (input.getUsername().equals("Test") && input.getPassword().equals("1234")) {
+            httpSession.setAttribute("loggedIn", true);
+            return true;
+        }
+        return false;
+    }
+
     @RequestMapping(value = "/rulelist", method = RequestMethod.GET)
-    public RuleList rulelist() {
-        return new RuleList();
+    public ArrayList<Rule> rulelist(HttpSession httpSession, HttpServletResponse response) {
+        if(httpSession.getAttribute("loggedIn") == null || !(boolean)httpSession.getAttribute("loggedIn")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        }
+        return Alarmsystem.getInstance().getAllRules();
     }
 
     @RequestMapping(value = "/component", method = RequestMethod.GET)
-    public Component component(@RequestParam(value = "id", defaultValue = "1") String id) {
+    public Component component(@RequestParam(value = "id", defaultValue = "1") String id, HttpSession httpSession, HttpServletResponse response) {
+        if(httpSession.getAttribute("loggedIn") == null || !(boolean)httpSession.getAttribute("loggedIn")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        }
         return new Sensor(Integer.parseInt(id), 0);
     }
 
