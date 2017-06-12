@@ -9,14 +9,6 @@ import java.util.Map;
  * Created by D062452 on 02.06.2017.
  */
 public class Rule implements Serializable{
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     private int id;
     static int globalId = 0;
     private Map<Sensor,Boolean> input = new HashMap<Sensor, Boolean>();
@@ -24,6 +16,14 @@ public class Rule implements Serializable{
 
     public Rule(){
         id = Rule.globalId++;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public boolean addComponent(Component comp, boolean value){
@@ -73,12 +73,9 @@ public class Rule implements Serializable{
             aktor.getKey().activate();
         }
     }
-    public String toJson(){
+
+    //Weiß nicht, ob das noch benötigt wird, aber ich kommentiere es mal aus, da gson nicht mehr zur Verfügung steht
+    /*public String toJson(){
         return Alarmsystem.getInstance().g.toJson(this);
-    }
-
-
-
-
-
+    }*/
 }

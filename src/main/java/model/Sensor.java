@@ -7,13 +7,15 @@ import java.util.Date;
  * Created by Jonas on 29.05.2017.
  */
 public class Sensor extends Component implements Serializable{
-    @Override
-    public boolean isSensor() {
-        return true;
-    }
+    private boolean state;
 
     public Sensor(int id, double voltage) {
         super(id, voltage);
+    }
+
+    @Override
+    public boolean isSensor() {
+        return true;
     }
 
     public boolean getState() {
@@ -24,8 +26,4 @@ public class Sensor extends Component implements Serializable{
         this.state = state;
         history.put(new Date(), state);
     }
-
-    private boolean state;
-
-
 }

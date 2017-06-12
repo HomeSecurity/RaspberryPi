@@ -9,13 +9,13 @@ import java.util.Date;
 public class Aktor extends Component implements Serializable{
     private boolean isActivated;
 
+    public Aktor(int id, double voltage) {
+        super(id, voltage);
+    }
+
     @Override
     public boolean isSensor() {
         return false;
-    }
-
-    public Aktor(int id, double voltage) {
-        super(id, voltage);
     }
 
     public void activate(){
