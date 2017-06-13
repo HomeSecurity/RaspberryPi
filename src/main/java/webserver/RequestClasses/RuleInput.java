@@ -4,6 +4,7 @@ package webserver.RequestClasses;
  * Created by Tim on 12.06.2017.
  */
 public class RuleInput {
+    private int id;
     private String name;
     private boolean active;
     private int[] components;
@@ -30,5 +31,13 @@ public class RuleInput {
 
     public void setComponents(int[] components) {
         this.components = components;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

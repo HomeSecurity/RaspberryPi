@@ -174,6 +174,11 @@ public class Alarmsystem {
         return rules.get(id);
     }
 
+    public boolean removeRulebyId(int id) {
+        rules.remove(id);
+        return true;
+    }
+
     public Map<Integer, Rule> getAllRules(){
         return rules;
     }

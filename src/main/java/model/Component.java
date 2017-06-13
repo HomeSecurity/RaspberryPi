@@ -10,6 +10,7 @@ import java.util.Map;
  * Created by Jonas on 29.05.2017.
  */
 public abstract class Component implements Serializable{
+    private String name;
     private double voltage;
     public abstract boolean isSensor();
     protected Map<Date, Boolean> history = new HashMap<Date, Boolean>();
@@ -35,5 +36,13 @@ public abstract class Component implements Serializable{
         created = new Date();
         this.id = id;
         this.voltage = voltage;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
