@@ -1,6 +1,5 @@
 package webserver;
 
-import com.sun.deploy.util.ArrayUtil;
 import model.*;
 import org.springframework.web.bind.annotation.*;
 import webserver.RequestClasses.ComponentInput;
@@ -9,7 +8,6 @@ import webserver.RequestClasses.RuleInput;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
