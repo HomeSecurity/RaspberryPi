@@ -37,7 +37,7 @@ public class Main {
 
         */
         Alarmsystem.getInstance();
-        Radio radio = new Radio();
+        Radio.getInstance();
 
     }
 

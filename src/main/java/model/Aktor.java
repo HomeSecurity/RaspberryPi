@@ -1,5 +1,8 @@
 package model;
 
+import Radio.Radio;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -28,7 +31,11 @@ public class Aktor extends Component implements Serializable{
     private void send(boolean data){
         isActivated = data;
         history.put(new Date(), data);
-        //implement sending here @Armin
+        try {
+            Radio.getInstance().sendData(getId(), data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

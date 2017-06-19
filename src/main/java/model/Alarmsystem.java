@@ -132,7 +132,7 @@ public class Alarmsystem {
                 newComponent = new Steckdose(id, voltage);
                 break;
                 default:
-                    return false;
+                    newComponent = new DoorSensor(id, voltage);
         }
         components.put(newComponent.getId(), newComponent);
         //persist

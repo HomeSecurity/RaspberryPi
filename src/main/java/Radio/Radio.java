@@ -22,8 +22,19 @@ import static java.lang.Thread.sleep;
  * Created by Armin on 26.12.2016.
  */
 public class Radio {
-    public Radio() throws IOException {
-        Serial serial = SerialFactory.createInstance();
+    private static Radio instance;
+    private Serial serial;
+
+    public static Radio getInstance() throws IOException {
+        if (instance == null) {
+            instance = new Radio();
+        }
+
+        return instance;
+    }
+
+    private Radio() throws IOException {
+        serial = SerialFactory.createInstance();
         serial.addListener((SerialDataEventListener) event -> {
             try {
                 if (Charset.forName("US-ASCII").newEncoder().canEncode(event.getAsciiString())) {
@@ -47,31 +58,6 @@ public class Radio {
 
         System.out.println("Connecting to: " + config);
         serial.open(config);
-
-
-        new Thread(() -> {
-            while (true) {
-                try {
-                    sleep(5000);
-                    //data format:
-                    //first char 0-5: sensorId (filled with leading 0) e.g. id:124 -> 00124
-                    //char 6: data (1 or 0)
-                    //char 7: 'a' = indicate the message is over
-                    String sensorId = "" + (int) (Math.random() * 65000);
-                    //sensorId = "31558";
-                    while (sensorId.length() < 5) {
-                        sensorId = "0" + sensorId;
-                    }
-                    boolean data = Math.random() > 0.5;
-                    System.out.println("SENDING TO AKTOR: id=" + sensorId + " data:" + data);
-                    serial.write(sensorId.toCharArray());
-                    serial.write(data ? '1' : '0');
-                    serial.write('a');
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     //todo filter readings from same sensor in very short time
@@ -108,5 +94,31 @@ public class Radio {
         double voltage = readings[2] / 1000.0;
         System.out.println("SENSOR DATA: " + "sensorId: " + sensorId + " data: " + data + " voltage: " + voltage);
         Alarmsystem.getInstance().onDataMessage(sensorId, data, voltage);
+    }
+
+    public void sendData(int sensorID, boolean datA) {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    sleep(5000);
+                    //data format:
+                    //first char 0-5: sensorId (filled with leading 0) e.g. id:124 -> 00124
+                    //char 6: data (1 or 0)
+                    //char 7: 'a' = indicate the message is over
+                    String sensorId = "" + (int) (Math.random() * 65000);
+                    sensorId = "31558";
+                    while (sensorId.length() < 5) {
+                        sensorId = "0" + sensorId;
+                    }
+                    boolean data = Math.random() > 0.5;
+                    System.out.println("SENDING TO AKTOR: id=" + sensorId + " data:" + data);
+                    serial.write(sensorId.toCharArray());
+                    serial.write(data ? '1' : '0');
+                    serial.write('a');
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
