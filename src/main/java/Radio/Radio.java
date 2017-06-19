@@ -1,20 +1,10 @@
 package Radio;
 
-import com.pi4j.io.serial.Baud;
-import com.pi4j.io.serial.DataBits;
-import com.pi4j.io.serial.FlowControl;
-import com.pi4j.io.serial.Parity;
-import com.pi4j.io.serial.RaspberryPiSerial;
-import com.pi4j.io.serial.Serial;
-import com.pi4j.io.serial.SerialConfig;
-import com.pi4j.io.serial.SerialDataEventListener;
-import com.pi4j.io.serial.SerialFactory;
-import com.pi4j.io.serial.StopBits;
+import com.pi4j.io.serial.*;
+import model.Alarmsystem;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-
-import model.Alarmsystem;
 
 import static java.lang.Thread.sleep;
 
@@ -96,29 +86,22 @@ public class Radio {
         Alarmsystem.getInstance().onDataMessage(sensorId, data, voltage);
     }
 
-    public void sendData(int sensorID, boolean datA) {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    sleep(5000);
-                    //data format:
-                    //first char 0-5: sensorId (filled with leading 0) e.g. id:124 -> 00124
-                    //char 6: data (1 or 0)
-                    //char 7: 'a' = indicate the message is over
-                    String sensorId = "" + (int) (Math.random() * 65000);
-                    sensorId = "31558";
-                    while (sensorId.length() < 5) {
-                        sensorId = "0" + sensorId;
-                    }
-                    boolean data = Math.random() > 0.5;
-                    System.out.println("SENDING TO AKTOR: id=" + sensorId + " data:" + data);
-                    serial.write(sensorId.toCharArray());
-                    serial.write(data ? '1' : '0');
-                    serial.write('a');
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    public void sendData(int id, boolean data) {
+        String sensorId = "" + id;
+        try {
+            //data format:
+            //first char 0-5: sensorId (filled with leading 0) e.g. id:124 -> 00124
+            //char 6: data (1 or 0)
+            //char 7: 'a' = indicate the message is over
+            while (sensorId.length() < 5) {
+                sensorId = "0" + sensorId;
             }
-        }).start();
+            System.out.println("SENDING TO AKTOR: id=" + sensorId + " data:" + data);
+            serial.write(sensorId.toCharArray());
+            serial.write(data ? '1' : '0');
+            serial.write('a');
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

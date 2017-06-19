@@ -38,7 +38,6 @@ public class Main {
         */
         Alarmsystem.getInstance();
         Radio.getInstance();
-
     }
 
     private void printSystemInformation() throws IOException, InterruptedException {
