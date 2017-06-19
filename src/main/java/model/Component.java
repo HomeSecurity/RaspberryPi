@@ -45,4 +45,10 @@ public abstract class Component implements Serializable{
     public void setName(String name) {
         this.name = name;
     }
+
+    //Gibt nur die Id aus, damit die Map im JSON funktioniert
+    @Override
+    public String toString() {
+        return ""+id;
+    }
 }
