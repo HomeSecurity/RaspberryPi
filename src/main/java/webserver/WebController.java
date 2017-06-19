@@ -5,9 +5,11 @@ import org.springframework.web.bind.annotation.*;
 import webserver.RequestClasses.ComponentInput;
 import webserver.RequestClasses.LoginInput;
 import webserver.RequestClasses.RuleInput;
+import webserver.ResponseClasses.LoginOutput;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -26,13 +28,12 @@ public class WebController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public boolean login(HttpSession session, HttpServletResponse response, @RequestBody LoginInput input) {
+    public LoginOutput login(HttpSession session, HttpServletResponse response, @RequestBody LoginInput input) {
         if (input.getUsername().equals("Test") && input.getPassword().equals("1234")) {
             session.setAttribute("loggedIn", true);
-            return true;
+            return new LoginOutput(true);
         }
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return false;
+        return new LoginOutput(false);
     }
 
     @RequestMapping(value = "/rulelist", method = RequestMethod.GET)

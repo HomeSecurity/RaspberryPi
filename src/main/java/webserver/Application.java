@@ -22,8 +22,8 @@ public class Application {
         r2.addComponent(new Sensor(3, 0), true);
         r2.addComponent(new Aktor(4, 0), true);
         /*try {
-            Radio radio = new Radio();
-        } catch(IOException e) {
+            Radio radio = Radio.getInstance();
+        } catch(Exception e) {
             e.printStackTrace();
         }*/
         SpringApplication.run(Application.class, args);
