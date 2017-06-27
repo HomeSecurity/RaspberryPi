@@ -56,7 +56,6 @@ public class WebController {
         return rule;
     }
 
-    //update Rule
     @RequestMapping(value = "/updaterule", method = RequestMethod.PUT)
     public Rule updaterule(HttpSession session, HttpServletResponse response, @RequestBody RuleInput ruleInput) {
         if(!authorization(session,response)) {
@@ -103,6 +102,7 @@ public class WebController {
         return rule;
     }
 
+    //TODO: change to parameter
     @RequestMapping(value = "/deleterule", method = RequestMethod.DELETE)
     public Boolean deleterule(HttpSession session, HttpServletResponse response, @RequestBody RuleInput ruleInput) {
         if(!authorization(session,response)) {
