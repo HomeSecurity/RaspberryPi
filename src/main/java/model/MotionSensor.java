@@ -7,5 +7,4 @@ public class MotionSensor extends Sensor {
     public MotionSensor(int id, double voltage) {
         super(id, voltage);
     }
-
 }

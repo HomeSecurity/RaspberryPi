@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ public class Rule implements Serializable{
     static int globalId = 0;
     private Map<Sensor,Boolean> input = new HashMap<Sensor, Boolean>();
     private Map<Aktor,Boolean> output = new HashMap<Aktor, Boolean>();
+    protected ArrayList<Date> history = new ArrayList<Date>();
     private String name;
     private boolean active;
 
@@ -100,10 +102,6 @@ public class Rule implements Serializable{
         for(Map.Entry<Aktor, Boolean> aktor : output.entrySet()){
             aktor.getKey().activate();
         }
+        history.add(new Date());
     }
-
-    //Weiß nicht, ob das noch benötigt wird, aber ich kommentiere es mal aus, da gson nicht mehr zur Verfügung steht
-    /*public String toJson(){
-        return Alarmsystem.getInstance().g.toJson(this);
-    }*/
 }
