@@ -199,8 +199,9 @@ public class Alarmsystem {
     }
 
     public void activateRegistrationMode(){
+        Alarmsystem.getInstance().registrationMode = true;
         new Thread(() -> {
-            Alarmsystem.getInstance().registrationMode = true;
+
             try {
                 //sleep for 60sec
                 Thread.sleep(60000);
