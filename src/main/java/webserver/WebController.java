@@ -205,4 +205,21 @@ public class WebController {
         return new Sensor(Integer.parseInt(id), 0);
     }*/
 
+    @RequestMapping(value = "/getnotifications", method = RequestMethod.GET)
+    public String getnotifications(HttpSession session, HttpServletResponse response) {
+        if (!authorization(session, response)) {
+            return null;
+        }
+        //TODO
+        return "Not yet implemented :(";
+    }
+
+    @RequestMapping(value = "/resetalarm", method = RequestMethod.GET)
+    public Boolean resetalarm(HttpSession session, HttpServletResponse response) {
+        if (!authorization(session, response)) {
+            return null;
+        }
+        Alarmsystem.getInstance().resetAlarm();
+        return true;
+    }
 }
