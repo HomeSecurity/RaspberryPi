@@ -15,12 +15,36 @@ import java.io.IOException;
 public class Application {
 
     public static void main(String args[]) {
-        Rule r = Alarmsystem.getInstance().newRule("rule1", true);
-        r.addComponent(new Sensor(1, 0), true);
-        r.addComponent(new Aktor(2, 0), true);
-        Rule r2 = Alarmsystem.getInstance().newRule("rule2", true);
-        r2.addComponent(new Sensor(3, 0), true);
-        r2.addComponent(new Aktor(4, 0), true);
+
+        Alarmsystem system = Alarmsystem.getInstance();
+
+        //TODO:RESET ENTFERNEN!!!
+        system.resetModel();
+
+        system.activateRegistrationMode();
+        system.onRegistrationMessage(1,1000,2.0);
+        system.onRegistrationMessage(2,1001,2.0);
+        system.onRegistrationMessage(3,2000,2.0);
+        system.onRegistrationMessage(4,2001,2.0);
+
+        Component sensor1 = system.getComponentById(1);
+        Component sensor2 = system.getComponentById(2);
+        Component aktor1 = system.getComponentById(3);
+        Component aktor2 = system.getComponentById(4);
+
+        sensor1.setName("sensor1");
+        sensor2.setName("sensor2");
+        aktor1.setName("aktor1");
+        aktor2.setName("aktor2");
+
+        Rule rule1 = system.newRule("rule1", true);
+        Rule rule2 = system.newRule("rule2", true);
+
+        system.addComponentToRule(rule1.getId(), sensor1.getId(), true);
+        system.addComponentToRule(rule1.getId(), aktor1.getId(), true);
+        system.addComponentToRule(rule2.getId(), sensor2.getId(), true);
+        system.addComponentToRule(rule2.getId(), aktor2.getId(), true);
+
         /*try {
             Radio radio = Radio.getInstance();
         } catch(Exception e) {
