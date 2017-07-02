@@ -155,8 +155,6 @@ public class Alarmsystem {
             return true;
         }
         return false;
-
-
     }
     public boolean removeComponentFromRule(int ruleId, int componentId, boolean value){
         Component comp = Alarmsystem.getInstance().getComponentById(componentId);
@@ -213,6 +211,11 @@ public class Alarmsystem {
                 Alarmsystem.getInstance().registrationMode = false;
             }
         }).start();
+    }
+    public void resetModel(){
+        components = new HashMap<Integer, Component>();
+        rules = new HashMap<Integer, Rule>();
+        persist();
     }
 
 
