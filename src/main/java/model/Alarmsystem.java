@@ -3,6 +3,8 @@ package model;
 import com.google.gson.Gson;
 
 import java.io.*;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,6 +103,14 @@ public class Alarmsystem {
         }
         //persist
         Alarmsystem.getInstance().persist();
+    }
+
+    public boolean registerIpCamera(int id, String ip){
+        //no registration mode needed, because app user has to enter valid ip
+        Kamera cam = new Kamera(id);
+        cam.setIp(ip);
+        components.put(cam.getId(), cam);
+        return true;
     }
 
     public boolean onRegistrationMessage(int id, int type, double voltage){
