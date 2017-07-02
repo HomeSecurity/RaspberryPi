@@ -62,7 +62,11 @@ public class Kamera extends Aktor {
 
         }
     }
-    public InetAddress getIp() {
+    //TODO:InetAdress?
+    /*public InetAddress getIp() {
         return null;
+    }*/
+    public String getIp() {
+        return this.ip;
     }
 }

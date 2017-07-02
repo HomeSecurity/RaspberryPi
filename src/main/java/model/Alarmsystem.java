@@ -139,7 +139,7 @@ public class Alarmsystem {
         for (Component comp : components.values()) {
             if (!comp.isSensor()) {
                 Aktor aktor = (Aktor) comp;
-                aktor.disable();
+                aktor.disable();//this line throws an error when gpio is not available...
             } else {
                 //not sure if we should reset the sensor values after disabling the alarm?
                 //todo
@@ -151,12 +151,12 @@ public class Alarmsystem {
         Alarmsystem.getInstance().persist();
     }
 
-    public boolean registerIpCamera(int id, String ip) {
+    public Component registerIpCamera(int id, String ip) {
         //no registration mode needed, because app user has to enter valid ip
         Kamera cam = new Kamera(id);
         cam.setIp(ip);
         components.put(cam.getId(), cam);
-        return true;
+        return (Component) cam;
     }
 
     public boolean onRegistrationMessage(int id, int type, double voltage) {

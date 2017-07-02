@@ -4,6 +4,7 @@ import model.*;
 import org.springframework.web.bind.annotation.*;
 import webserver.RequestClasses.ComponentInput;
 import webserver.RequestClasses.Credentials;
+import webserver.RequestClasses.KameraInput;
 import webserver.RequestClasses.RuleInput;
 import webserver.ResponseClasses.BooleanOutput;
 
@@ -169,7 +170,7 @@ public class WebController {
         }
         Component component = Alarmsystem.getInstance().getComponentById(componentInput.getId());
         component.setName(componentInput.getName());
-        component.setDescription(componentInput.getName());
+        component.setDescription(componentInput.getDescription());
         return component;
     }
 
@@ -196,17 +197,27 @@ public class WebController {
         return true;
     }
 
-    //TODO: Für die Kamera???
-    /*@RequestMapping(value = "/component", method = RequestMethod.GET)
-    public Component component(HttpSession session, HttpServletResponse response, @RequestParam(value = "id", defaultValue = "1") String id) {
+    @RequestMapping(value = "/addcamera", method = RequestMethod.POST)
+    public Component addcamera(HttpSession session, HttpServletResponse response, @RequestBody KameraInput kameraInput) {
         if(!authorization(session,response)) {
             return null;
         }
-        return new Sensor(Integer.parseInt(id), 0);
-    }*/
+        Component kamera = Alarmsystem.getInstance().registerIpCamera(kameraInput.getId(), kameraInput.getIp());
+        return updatecomponent(session, response, kameraInput);
+    }
 
-    @RequestMapping(value = "/getnotifications", method = RequestMethod.GET)
-    public String getnotifications(HttpSession session, HttpServletResponse response) {
+    @RequestMapping(value = "/updatecamera", method = RequestMethod.PUT)
+    public Component updatecamera(HttpSession session, HttpServletResponse response, @RequestBody KameraInput kameraInput) {
+        if (!authorization(session, response)) {
+            return null;
+        }
+        Kamera kamera = (Kamera) Alarmsystem.getInstance().getComponentById(kameraInput.getId());
+        kamera.setIp(kameraInput.getIp());
+        return updatecomponent(session, response, kameraInput);
+    }
+
+    @RequestMapping(value = "/notificationlist", method = RequestMethod.GET)
+    public String notificationlist(HttpSession session, HttpServletResponse response) {
         if (!authorization(session, response)) {
             return null;
         }
@@ -220,6 +231,15 @@ public class WebController {
             return null;
         }
         Alarmsystem.getInstance().resetAlarm();
+        return true;
+    }
+
+    @RequestMapping(value = "/settoken", method = RequestMethod.POST)
+    public Boolean settoken(HttpSession session, HttpServletResponse response, @RequestBody String token) {
+        if (!authorization(session, response)) {
+            return null;
+        }
+        Alarmsystem.getInstance().setToken(token);
         return true;
     }
 }
