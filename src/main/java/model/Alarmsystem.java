@@ -215,6 +215,7 @@ public class Alarmsystem {
     public void resetModel(){
         components = new HashMap<Integer, Component>();
         rules = new HashMap<Integer, Rule>();
+        Rule.globalId = 0;
         persist();
     }
 
