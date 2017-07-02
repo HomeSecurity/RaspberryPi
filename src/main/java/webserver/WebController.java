@@ -49,9 +49,9 @@ public class WebController {
         if(!authorization(session,response)) {
             return null;
         }
-        Rule rule = Alarmsystem.getInstance().newRule(ruleInput.getName(),ruleInput.isActive());
+        Rule rule = Alarmsystem.getInstance().newRule(ruleInput.getName(), ruleInput.isActive());
         for(int id : ruleInput.getComponents()) {
-            rule.addComponent(Alarmsystem.getInstance().getComponentById(id), true);
+            Alarmsystem.getInstance().addComponentToRule(rule.getId(), id, true);
         }
         return rule;
     }
@@ -102,13 +102,12 @@ public class WebController {
         return rule;
     }
 
-    //TODO: change to parameter
     @RequestMapping(value = "/deleterule", method = RequestMethod.DELETE)
-    public Boolean deleterule(HttpSession session, HttpServletResponse response, @RequestBody RuleInput ruleInput) {
+    public Boolean deleterule(HttpSession session, HttpServletResponse response, @RequestParam(value = "id") int id) {
         if(!authorization(session,response)) {
             return null;
         }
-        return Alarmsystem.getInstance().removeRulebyId(ruleInput.getId());
+        return Alarmsystem.getInstance().removeRulebyId(id);
     }
 
     @RequestMapping(value = "/componentlist", method = RequestMethod.GET)
@@ -142,6 +141,10 @@ public class WebController {
     public Boolean deletecomponent(HttpSession session, HttpServletResponse response, @RequestParam(value = "id") int id) {
         if(!authorization(session,response)) {
             return null;
+        }
+        Rule[] rules = Alarmsystem.getInstance().getAllRules().values().toArray(new Rule[0]);
+        for(Rule r : rules){
+            Alarmsystem.getInstance().removeComponentFromRule(r.getId(), id, true);
         }
         return Alarmsystem.getInstance().removeComponent(id);
     }

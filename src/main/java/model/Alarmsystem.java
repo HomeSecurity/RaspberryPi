@@ -177,18 +177,23 @@ public class Alarmsystem {
         switch (type) {
             case 1000:
                 newComponent = new DoorSensor(id, voltage);
+                newComponent.setName("DoorSensor");
                 break;
             case 1001:
                 newComponent = new MotionSensor(id, voltage);
+                newComponent.setName("MotionSensor");
                 break;
             case 2000:
                 newComponent = new Sirene(id, voltage);
+                newComponent.setName("Sirene");
                 break;
             case 2001:
                 newComponent = new Steckdose(id, voltage);
+                newComponent.setName("Steckdose");
                 break;
             default:
                 newComponent = new DoorSensor(id, voltage);
+                newComponent.setName("DoorSensor");
         }
         components.put(newComponent.getId(), newComponent);
         //persist
@@ -236,11 +241,13 @@ public class Alarmsystem {
         return true;
     }
 
-    public Map<Integer, Rule> getAllRules() {
+    public Map<Integer, Rule> getAllRules(){
+        //Array: return  rules.values().toArray(new Rule[0]);
         return rules;
     }
 
     public Map<Integer, Component> getAllComponents() {
+        //Array: return components.values().toArray(new Component[0]);
         return components;
     }
 
@@ -278,6 +285,5 @@ public class Alarmsystem {
         Rule.globalId = 0;
         persist();
     }
-
 
 }
