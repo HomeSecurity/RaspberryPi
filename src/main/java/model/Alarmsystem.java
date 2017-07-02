@@ -18,6 +18,11 @@ public class Alarmsystem {
     private Map<Integer, Component> components = new HashMap<Integer, Component>();
     private Map<Integer, Rule> rules = new HashMap<Integer, Rule>();
     private boolean registrationMode = false;
+    private String token;
+
+    public void setToken(String token){
+        this.token = token;
+    }
 
 
 
