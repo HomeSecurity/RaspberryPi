@@ -1,9 +1,14 @@
 package model;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-import java.io.*;
-import java.net.InetAddress;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,28 +19,30 @@ import java.util.Map;
  */
 public class Alarmsystem {
     private static Alarmsystem instance;
-    private Alarmsystem(){}
+
+    private Alarmsystem() {
+    }
+
     private Map<Integer, Component> components = new HashMap<Integer, Component>();
     private Map<Integer, Rule> rules = new HashMap<Integer, Rule>();
     private boolean registrationMode = false;
     private String token;
 
-    public void setToken(String token){
+    public void setToken(String token) {
         this.token = token;
     }
 
 
-
     public static Alarmsystem getInstance() {
-        if (Alarmsystem.instance == null){
+        if (Alarmsystem.instance == null) {
             Alarmsystem.instance = new Alarmsystem();
             Alarmsystem.instance.init();
         }
         return Alarmsystem.instance;
     }
 
-    public void persist(){
-        try{
+    public void persist() {
+        try {
             FileOutputStream fout = new FileOutputStream("components.ser", false);
             ObjectOutputStream oos = new ObjectOutputStream(fout);
             oos.writeObject(components);
@@ -47,7 +54,7 @@ public class Alarmsystem {
         }
     }
 
-    public void init(){
+    public void init() {
         ObjectInputStream objectinputstream = null;
         try {
             FileInputStream streamIn = new FileInputStream("components.ser");
@@ -59,8 +66,8 @@ public class Alarmsystem {
             rules = (Map<Integer, Rule>) objectinputstream.readObject();
 
             //adjust global rule Id for further rules
-            for (Rule rule : rules.values()){
-                if(Rule.globalId < rule.getId()){
+            for (Rule rule : rules.values()) {
+                if (Rule.globalId < rule.getId()) {
                     Rule.globalId = rule.getId() + 1;
                 }
             }
@@ -73,7 +80,7 @@ public class Alarmsystem {
     public void onDataMessage(int sensorId, boolean data, double voltage) {
         Component comp = Alarmsystem.getInstance().getComponentById(sensorId);
         comp.setVoltage(voltage);
-        if(comp.isSensor()) {
+        if (comp.isSensor()) {
             Sensor sensor = (Sensor) comp;
             sensor.setState(data);
         }
@@ -83,26 +90,60 @@ public class Alarmsystem {
         //check all Rules
         Alarmsystem.getInstance().checkRules();
     }
-    public ArrayList<Rule> checkRules(){
+
+    public ArrayList<Rule> checkRules() {
         ArrayList<Rule> triggered = new ArrayList<>();
         for (Rule rule : rules.values()) {
-            if(rule.isTriggered()) {
+            if (rule.isTriggered()) {
                 triggered.add(rule);
             }
         }
+
         return triggered;
     }
 
-    public void resetAlarm(){
-        for(Component comp : components.values()){
-            if(!comp.isSensor()){
-                Aktor aktor = (Aktor)comp;
-                aktor.disable();
+    private void sendFirebaseMessage(String notificationBody) {
+        new Thread(() -> {
+            try {
+                JsonObject fcmMessage = new JsonObject();
+                fcmMessage.addProperty("priority", "high");
+                fcmMessage.addProperty("to", token);
+                fcmMessage.addProperty("delay_while_idle", false);
+
+                JsonObject data = new JsonObject();
+                data.addProperty("message", notificationBody);
+                fcmMessage.add("data", data);
+
+                HttpURLConnection connection = (HttpURLConnection) new URL("https://fcm.googleapis.com/fcm/send").openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Authorization", "key=AAAAzrOtSFE:APA91bG50Y5oydNdlL71tZBMfOv77n3OWu383fvddq6AEJbqfEINj8564r9ECoIdCDxOcnsMw1JRKUtA1Ow8JWlLv4E9aZarmuCNElK67DDCcTg2O6maS90i5PmhZFSymXn4t0vao5jO");
+                connection.setDoOutput(true);
+
+                connection.getOutputStream().write(fcmMessage.toString().getBytes("UTF-8"));
+                connection.getOutputStream().close();
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String read;
+                    while ((read = br.readLine()) != null) {
+                        System.out.println(read);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            else{
+        }).start();
+    }
+
+    public void resetAlarm() {
+        for (Component comp : components.values()) {
+            if (!comp.isSensor()) {
+                Aktor aktor = (Aktor) comp;
+                aktor.disable();
+            } else {
                 //not sure if we should reset the sensor values after disabling the alarm?
                 //todo
-                Sensor sensor = (Sensor)comp;
+                Sensor sensor = (Sensor) comp;
                 sensor.setState(false);
             }
         }
@@ -110,7 +151,7 @@ public class Alarmsystem {
         Alarmsystem.getInstance().persist();
     }
 
-    public boolean registerIpCamera(int id, String ip){
+    public boolean registerIpCamera(int id, String ip) {
         //no registration mode needed, because app user has to enter valid ip
         Kamera cam = new Kamera(id);
         cam.setIp(ip);
@@ -118,8 +159,8 @@ public class Alarmsystem {
         return true;
     }
 
-    public boolean onRegistrationMessage(int id, int type, double voltage){
-        if(!registrationMode){
+    public boolean onRegistrationMessage(int id, int type, double voltage) {
+        if (!registrationMode) {
             return false;
         }
 
@@ -133,7 +174,7 @@ public class Alarmsystem {
         //2000 Sirene
         //2001 Steckdose
         Component newComponent;
-        switch(type){
+        switch (type) {
             case 1000:
                 newComponent = new DoorSensor(id, voltage);
                 break;
@@ -146,36 +187,39 @@ public class Alarmsystem {
             case 2001:
                 newComponent = new Steckdose(id, voltage);
                 break;
-                default:
-                    newComponent = new DoorSensor(id, voltage);
+            default:
+                newComponent = new DoorSensor(id, voltage);
         }
         components.put(newComponent.getId(), newComponent);
         //persist
         Alarmsystem.getInstance().persist();
         return true;
     }
-    public Rule newRule(String name, boolean active){
+
+    public Rule newRule(String name, boolean active) {
         Rule rule = new Rule(name, active);
         rules.put(rule.getId(), rule);
         //persist
         Alarmsystem.getInstance().persist();
         return rule;
     }
-    public boolean addComponentToRule(int ruleId, int componendId, boolean value){
+
+    public boolean addComponentToRule(int ruleId, int componendId, boolean value) {
         Component comp = Alarmsystem.getInstance().getComponentById(componendId);
         Rule rule = Alarmsystem.getInstance().getRulebyId(ruleId);
-        if(rule.addComponent(comp,value)){
+        if (rule.addComponent(comp, value)) {
             //persist
             Alarmsystem.getInstance().persist();
             return true;
         }
         return false;
     }
-    public boolean removeComponentFromRule(int ruleId, int componentId, boolean value){
+
+    public boolean removeComponentFromRule(int ruleId, int componentId, boolean value) {
         Component comp = Alarmsystem.getInstance().getComponentById(componentId);
         Rule rule = Alarmsystem.getInstance().getRulebyId(ruleId);
 
-        if(rule.removeComponent(comp, value)){
+        if (rule.removeComponent(comp, value)) {
             //persist
             Alarmsystem.getInstance().persist();
             return true;
@@ -183,7 +227,7 @@ public class Alarmsystem {
         return false;
     }
 
-    public Rule getRulebyId(int id){
+    public Rule getRulebyId(int id) {
         return rules.get(id);
     }
 
@@ -192,18 +236,19 @@ public class Alarmsystem {
         return true;
     }
 
-    public Map<Integer, Rule> getAllRules(){
+    public Map<Integer, Rule> getAllRules() {
         return rules;
     }
-    public Map<Integer, Component> getAllComponents(){
+
+    public Map<Integer, Component> getAllComponents() {
         return components;
     }
 
-    public Component getComponentById(int id){
+    public Component getComponentById(int id) {
         return components.get(id);
     }
 
-    public boolean removeComponent(int id){
+    public boolean removeComponent(int id) {
         if (components.containsKey(id)) {
             components.remove(id);
             return true;
@@ -211,7 +256,7 @@ public class Alarmsystem {
         return false;
     }
 
-    public void activateRegistrationMode(){
+    public void activateRegistrationMode() {
         Alarmsystem.getInstance().registrationMode = true;
         new Thread(() -> {
 
@@ -221,21 +266,18 @@ public class Alarmsystem {
             } catch (InterruptedException e) {
 
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 Alarmsystem.getInstance().registrationMode = false;
             }
         }).start();
     }
-    public void resetModel(){
+
+    public void resetModel() {
         components = new HashMap<Integer, Component>();
         rules = new HashMap<Integer, Rule>();
         Rule.globalId = 0;
         persist();
     }
-
-
-
 
 
 }
