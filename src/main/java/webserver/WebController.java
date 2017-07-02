@@ -95,43 +95,45 @@ public class WebController {
             return null;
         }
         Rule rule = Alarmsystem.getInstance().getRulebyId(ruleInput.getId());
-        int[] componentId = ruleInput.getComponents();
+        int[] componentIds = ruleInput.getComponents();
         int isInArray;
         for(Sensor sensor : rule.getInput().keySet()) {
             isInArray = 0;
-            for(int i : componentId) {
-                if (sensor.getId() == componentId[i]) {
+            for(int i = 0; i<componentIds.length; i++) {
+                if (sensor.getId() == componentIds[i]) {
                     isInArray = i;
                 }
             }
             if(isInArray == 0) {
-                rule.removeComponent(sensor, true);
+                Alarmsystem.getInstance().removeComponentFromRule(rule.getId(), sensor.getId(), true);
             } else {
-                int[] temp = new int[componentId.length-1];
-                System.arraycopy(componentId, 0, temp, 0, isInArray);
-                System.arraycopy(componentId, isInArray+1, temp, isInArray, temp.length-isInArray);
-                componentId = temp;
+                int[] temp = new int[componentIds.length-1];
+                System.arraycopy(componentIds, 0, temp, 0, isInArray);
+                System.arraycopy(componentIds, isInArray+1, temp, isInArray, temp.length-isInArray);
+                componentIds = temp;
             }
         }
         for(Aktor aktor : rule.getOutput().keySet()) {
             isInArray = 0;
-            for(int i : componentId) {
-                if(aktor.getId() == componentId[i]) {
+            for(int i = 0; i<componentIds.length; i++) {
+                if (aktor.getId() == componentIds[i]) {
                     isInArray = i;
                 }
             }
             if(isInArray == 0) {
-                rule.removeComponent(aktor, true);
+                Alarmsystem.getInstance().removeComponentFromRule(rule.getId(), aktor.getId(), true);
             } else {
-                int[] temp = new int[componentId.length-1];
-                System.arraycopy(componentId, 0, temp, 0, isInArray);
-                System.arraycopy(componentId, isInArray+1, temp, isInArray, temp.length-isInArray);
-                componentId = temp;
+                int[] temp = new int[componentIds.length-1];
+                System.arraycopy(componentIds, 0, temp, 0, isInArray);
+                System.arraycopy(componentIds, isInArray+1, temp, isInArray, temp.length-isInArray);
+                componentIds = temp;
             }
         }
-        for(int id: componentId) {
-            rule.addComponent(Alarmsystem.getInstance().getComponentById(id), true);
+        for(int id: componentIds) {
+            Alarmsystem.getInstance().addComponentToRule(rule.getId(), id, true);
         }
+        rule.setName(ruleInput.getName());
+        rule.setActive(ruleInput.isActive());
         return rule;
     }
 
