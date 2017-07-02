@@ -3,13 +3,13 @@ package webserver;
 import model.*;
 import org.springframework.web.bind.annotation.*;
 import webserver.RequestClasses.ComponentInput;
-import webserver.RequestClasses.LoginInput;
+import webserver.RequestClasses.Credentials;
 import webserver.RequestClasses.RuleInput;
-import webserver.ResponseClasses.LoginOutput;
+import webserver.ResponseClasses.BooleanOutput;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -27,13 +27,46 @@ public class WebController {
         return true;
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public LoginOutput login(HttpSession session, HttpServletResponse response, @RequestBody LoginInput input) {
-        if (input.getUsername().equals("Test") && input.getPassword().equals("1234")) {
-            session.setAttribute("loggedIn", true);
-            return new LoginOutput(true);
+    private void persistCredentials(Credentials credentials) {
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream("credentials.ser", false);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(credentials);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return new LoginOutput(false);
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public BooleanOutput login(HttpSession session, HttpServletResponse response, @RequestBody Credentials input) {
+        Credentials credentials = null;
+        File file = new File("credentials.ser");
+        if (file.exists() && !file.isDirectory()) {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                credentials = (Credentials) objectInputStream.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            credentials = new Credentials("DefaultUser", "DefaultPassword");
+            persistCredentials(credentials);
+        }
+        if (input.getUsername().equals(credentials.getUsername()) && input.getPassword().equals(credentials.getPassword())) {
+            session.setAttribute("loggedIn", true);
+            return new BooleanOutput(true);
+        }
+        return new BooleanOutput(false);
+    }
+
+    @RequestMapping(value = "/changecredentials", method = RequestMethod.POST)
+    public Boolean changecredentials(HttpSession session, HttpServletResponse response, @RequestBody Credentials input) {
+        if(!authorization(session,response)) {
+            return null;
+        }
+            persistCredentials(input);
+        return true;
     }
 
     @RequestMapping(value = "/rulelist", method = RequestMethod.GET)
@@ -137,7 +170,7 @@ public class WebController {
         return component;
     }
 
-    @RequestMapping(value = "/deletecomponent")
+    @RequestMapping(value = "/deletecomponent", method = RequestMethod.DELETE)
     public Boolean deletecomponent(HttpSession session, HttpServletResponse response, @RequestParam(value = "id") int id) {
         if(!authorization(session,response)) {
             return null;
@@ -149,6 +182,18 @@ public class WebController {
         return Alarmsystem.getInstance().removeComponent(id);
     }
 
+    @RequestMapping(value = "/resetall", method = RequestMethod.DELETE)
+    public Boolean resetall(HttpSession session, HttpServletResponse response) {
+        if(!authorization(session,response)) {
+            return null;
+        }
+        Credentials credentials = new Credentials("DefaultUser", "DefaultPassword");
+        persistCredentials(credentials);
+        Alarmsystem.getInstance().resetModel();
+        return true;
+    }
+
+    //TODO: Für die Kamera???
     /*@RequestMapping(value = "/component", method = RequestMethod.GET)
     public Component component(HttpSession session, HttpServletResponse response, @RequestParam(value = "id", defaultValue = "1") String id) {
         if(!authorization(session,response)) {

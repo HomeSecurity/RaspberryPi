@@ -1,10 +1,10 @@
 package webserver.ResponseClasses;
 
-public class LoginOutput {
+public class BooleanOutput {
 
     private final boolean output;
 
-    public LoginOutput(boolean output){
+    public BooleanOutput(boolean output){
         this.output = output;
     }
 
