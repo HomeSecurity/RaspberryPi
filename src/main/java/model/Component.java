@@ -15,6 +15,7 @@ public abstract class Component implements Serializable{
     public abstract boolean isSensor();
     protected Map<Date, Boolean> history = new HashMap<Date, Boolean>();
     private int id;
+    private String description;
 
     public int getId() {
         return id;
@@ -44,6 +45,14 @@ public abstract class Component implements Serializable{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     //Gibt nur die Id aus, damit die Map im JSON funktioniert

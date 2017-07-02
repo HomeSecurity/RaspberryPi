@@ -167,6 +167,7 @@ public class WebController {
         }
         Component component = Alarmsystem.getInstance().getComponentById(componentInput.getId());
         component.setName(componentInput.getName());
+        component.setDescription(componentInput.getName());
         return component;
     }
 

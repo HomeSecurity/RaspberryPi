@@ -178,22 +178,27 @@ public class Alarmsystem {
             case 1000:
                 newComponent = new DoorSensor(id, voltage);
                 newComponent.setName("DoorSensor");
+                newComponent.setDescription("DoorSensor");
                 break;
             case 1001:
                 newComponent = new MotionSensor(id, voltage);
                 newComponent.setName("MotionSensor");
+                newComponent.setDescription("MotionSensor");
                 break;
             case 2000:
                 newComponent = new Sirene(id, voltage);
                 newComponent.setName("Sirene");
+                newComponent.setDescription("Sirene");
                 break;
             case 2001:
                 newComponent = new Steckdose(id, voltage);
                 newComponent.setName("Steckdose");
+                newComponent.setDescription("Steckdose");
                 break;
             default:
                 newComponent = new DoorSensor(id, voltage);
                 newComponent.setName("DoorSensor");
+                newComponent.setDescription("Doorsensor");
         }
         components.put(newComponent.getId(), newComponent);
         //persist
