@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,6 +98,9 @@ public class Alarmsystem {
             if (rule.isTriggered()) {
                 triggered.add(rule);
             }
+        }
+        if(triggered.size() > 0){
+            sendFirebaseMessage("new Alarm!");
         }
 
         return triggered;
@@ -258,6 +262,17 @@ public class Alarmsystem {
 
     public Component getComponentById(int id) {
         return components.get(id);
+    }
+
+    public HashMap<Date, Rule> getNotifications(){
+        HashMap<Date, Rule> result = new HashMap<>();
+
+        for (Rule r: rules.values()) {
+            for (Date d : r.history){
+                result.put(d,r);
+            }
+        }
+        return result;
     }
 
     public boolean removeComponent(int id) {

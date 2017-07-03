@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,6 +47,20 @@ public class Rule implements Serializable{
 
     public Map<Aktor, Boolean> getOutput() {
         return output;
+    }
+    public BufferedImage getPictureForDate(Date d){
+        for(Aktor actor : output.keySet()){
+            try {
+                Kamera k = (Kamera) (actor);
+                if(k.getSnapShotForTimeStamp(d) != null){
+                    return k.getSnapShotForTimeStamp(d);
+                }
+            }
+            catch (Exception e){
+
+            }
+        }
+        return null;
     }
 
     public int getId() {
@@ -98,9 +113,10 @@ public class Rule implements Serializable{
             return input.remove(comp, value);
         }
     }
-    public void executeAlarm(){
-        for(Map.Entry<Aktor, Boolean> aktor : output.entrySet()){
-            aktor.getKey().activate();
+    public void executeAlarm() {
+        Date d = new Date();
+        for (Map.Entry<Aktor, Boolean> aktor : output.entrySet()) {
+            aktor.getKey().activate(d);
         }
         history.add(new Date());
     }

@@ -21,7 +21,7 @@ public class Aktor extends Component implements Serializable{
         return false;
     }
 
-    public void activate(){
+    public void activate(Date d){
         send(true);
     }
     public void disable(){

@@ -11,16 +11,17 @@ import java.nio.Buffer;
 import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by Jonas on 29.05.2017.
  */
 public class Kamera extends Aktor {
     private String ip;
-    private ArrayList<BufferedImage> snapshots = new ArrayList<>();
-    public BufferedImage getLastSnapShot(){
+    private HashMap<Date, BufferedImage> snapshots = new HashMap<Date, BufferedImage>();
+    public BufferedImage getSnapShotForTimeStamp(Date d){
         if(snapshots.isEmpty()) return null;
-        return snapshots.get(snapshots.size()-1);
+        return snapshots.get(d);
     }
 
     public Kamera(int id) {
@@ -32,7 +33,7 @@ public class Kamera extends Aktor {
     }
 
     @Override
-    public void activate(){
+    public void activate(Date d){
         //take picture with this ip adress
         //override activation behavior, because its no 868-communication
         Authenticator.setDefault(new Authenticator() {
@@ -55,7 +56,8 @@ public class Kamera extends Aktor {
                 read = is.read();
                 fis.write(read);
             }
-            snapshots.add(ImageIO.read(picture));
+            d = new Date();
+            snapshots.put(d, ImageIO.read(picture));
         }
         catch (Exception e){
             System.out.println(e);
