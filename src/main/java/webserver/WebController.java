@@ -248,9 +248,9 @@ public class WebController {
 
     @RequestMapping(value = "/settoken", method = RequestMethod.POST)
     public Boolean settoken(HttpSession session, HttpServletResponse response, @RequestBody String token) {
-        if (!authorization(session, response)) {
+        /*if (!authorization(session, response)) {
             return null;
-        }
+        }*/
         Alarmsystem.getInstance().setToken(token);
         return true;
     }
