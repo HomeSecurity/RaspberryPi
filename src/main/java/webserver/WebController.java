@@ -2,12 +2,8 @@ package webserver;
 
 import model.*;
 import org.springframework.web.bind.annotation.*;
-import webserver.RequestClasses.ComponentInput;
-import webserver.RequestClasses.Credentials;
-import webserver.RequestClasses.KameraInput;
-import webserver.RequestClasses.RuleInput;
-import webserver.ResponseClasses.BooleanOutput;
-
+import webserver.RequestClasses.*;
+import webserver.ResponseClasses.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
@@ -154,7 +150,7 @@ public class WebController {
         return Alarmsystem.getInstance().getAllComponents();
     }
 
-    @RequestMapping(value = "/registration", method = RequestMethod.POST)
+    @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public Boolean registration(HttpSession session, HttpServletResponse response) {
         if(!authorization(session,response)) {
             return null;
