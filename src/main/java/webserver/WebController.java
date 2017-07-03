@@ -216,22 +216,25 @@ public class WebController {
     }
 
     @RequestMapping(value = "/notificationlist", method = RequestMethod.GET)
-    public NotificationOutput[] notificationlist(HttpSession session, HttpServletResponse response) {
+    public Map<Integer, NotificationOutput> notificationlist(HttpSession session, HttpServletResponse response) {
         if (!authorization(session, response)) {
             return null;
         }
         HashMap<Date, Rule> notifications = Alarmsystem.getInstance().getNotifications();
-        NotificationOutput[] notificationOutputs = new NotificationOutput[notifications.size()];
+        Map<Integer, NotificationOutput> output = new HashMap<>();
+        //NotificationOutput[] notificationOutputs = new NotificationOutput[notifications.size()];
         int i = 0;
         for(Map.Entry<Date, Rule> entry : notifications.entrySet()) {
-            notificationOutputs[i] = new NotificationOutput(entry.getKey(), entry.getValue(), null);
+            output.put(i, new NotificationOutput(entry.getKey(), entry.getValue().getId(), entry.getValue().isTriggered()));
+            //notificationOutputs[i] = new NotificationOutput(entry.getKey(), entry.getValue(), null);
             BufferedImage bufferedImage = entry.getValue().getPictureForDate(entry.getKey());
             if (bufferedImage != null) {
-                notificationOutputs[i].setBufferedImage(bufferedImage);
+                output.get(i).setImage(bufferedImage);
+                //notificationOutputs[i].setImage(bufferedImage);
             }
             i++;
         }
-        return notificationOutputs;
+        return output;
     }
 
     @RequestMapping(value = "/resetalarm", method = RequestMethod.GET)

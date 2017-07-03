@@ -1,22 +1,20 @@
 package webserver.ResponseClasses;
 
-import model.Rule;
-
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 import java.util.Date;
 
 public class NotificationOutput {
     private Date date;
-    private Rule rule;
-    private BufferedImage bufferedImage;
+    private int ruleid;
+    private BufferedImage image;
+    private boolean triggered;
 
     public NotificationOutput(){}
 
-    public NotificationOutput(Date date, Rule rule, BufferedImage bufferedImage) {
+    public NotificationOutput(Date date, int ruleid, boolean isTriggered) {
         this.date = date;
-        this.rule = rule;
-        this.bufferedImage = bufferedImage;
+        this.ruleid = ruleid;
+        this.triggered = isTriggered;
     }
 
     public Date getDate() {
@@ -27,19 +25,27 @@ public class NotificationOutput {
         this.date = date;
     }
 
-    public Rule getRule() {
-        return rule;
+    public int getRuleid() {
+        return ruleid;
     }
 
-    public void setRule(Rule rule) {
-        this.rule = rule;
+    public void setRuleid(int ruleid) {
+        this.ruleid = ruleid;
     }
 
-    public BufferedImage getBufferedImage() {
-        return bufferedImage;
+    public BufferedImage getImage() {
+        return image;
     }
 
-    public void setBufferedImage(BufferedImage bufferedImage) {
-        this.bufferedImage = bufferedImage;
+    public void setImage(BufferedImage image) {
+        this.image = image;
+    }
+
+    public boolean isTriggered() {
+        return triggered;
+    }
+
+    public void setTriggered(boolean triggered) {
+        this.triggered = triggered;
     }
 }
