@@ -3,8 +3,8 @@ package model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by D062452 on 02.06.2017.
@@ -12,8 +12,8 @@ import java.util.Map;
 public class Rule implements Serializable{
     private int id;
     static int globalId = 0;
-    private Map<Sensor,Boolean> input = new HashMap<Sensor, Boolean>();
-    private Map<Aktor,Boolean> output = new HashMap<Aktor, Boolean>();
+    private Map<Sensor,Boolean> input = new ConcurrentHashMap<>();
+    private Map<Aktor,Boolean> output = new ConcurrentHashMap<Aktor, Boolean>();
     protected ArrayList<Date> history = new ArrayList<Date>();
     private String name;
     private boolean active;
