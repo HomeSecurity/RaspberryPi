@@ -6,7 +6,10 @@ import webserver.RequestClasses.*;
 import webserver.ResponseClasses.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -213,12 +216,22 @@ public class WebController {
     }
 
     @RequestMapping(value = "/notificationlist", method = RequestMethod.GET)
-    public String notificationlist(HttpSession session, HttpServletResponse response) {
+    public NotificationOutput[] notificationlist(HttpSession session, HttpServletResponse response) {
         if (!authorization(session, response)) {
             return null;
         }
-        //TODO
-        return "Not yet implemented :(";
+        HashMap<Date, Rule> notifications = Alarmsystem.getInstance().getNotifications();
+        NotificationOutput[] notificationOutputs = new NotificationOutput[notifications.size()];
+        int i = 0;
+        for(Map.Entry<Date, Rule> entry : notifications.entrySet()) {
+            notificationOutputs[i] = new NotificationOutput(entry.getKey(), entry.getValue(), null);
+            BufferedImage bufferedImage = entry.getValue().getPictureForDate(entry.getKey());
+            if (bufferedImage != null) {
+                notificationOutputs[i].setBufferedImage(bufferedImage);
+            }
+            i++;
+        }
+        return notificationOutputs;
     }
 
     @RequestMapping(value = "/resetalarm", method = RequestMethod.GET)

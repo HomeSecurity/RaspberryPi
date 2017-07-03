@@ -96,6 +96,7 @@ public class Alarmsystem {
         ArrayList<Rule> triggered = new ArrayList<>();
         for (Rule rule : rules.values()) {
             if (rule.isTriggered()) {
+                rule.executeAlarm();
                 triggered.add(rule);
             }
         }
