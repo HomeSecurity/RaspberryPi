@@ -48,6 +48,7 @@ public class Rule implements Serializable{
     public Map<Aktor, Boolean> getOutput() {
         return output;
     }
+
     public BufferedImage getPictureForDate(Date d){
         for(Aktor actor : output.keySet()){
             try {
@@ -118,6 +119,6 @@ public class Rule implements Serializable{
         for (Map.Entry<Aktor, Boolean> aktor : output.entrySet()) {
             aktor.getKey().activate(d);
         }
-        history.add(new Date());
+        history.add(d);
     }
 }

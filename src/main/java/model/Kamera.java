@@ -19,6 +19,7 @@ import java.util.HashMap;
 public class Kamera extends Aktor {
     private String ip;
     private HashMap<Date, BufferedImage> snapshots = new HashMap<Date, BufferedImage>();
+
     public BufferedImage getSnapShotForTimeStamp(Date d){
         if(snapshots.isEmpty()) return null;
         return snapshots.get(d);
@@ -48,7 +49,7 @@ public class Kamera extends Aktor {
             URLConnection uc = url.openConnection();
             uc.connect();
 
-            File picture = new File(this.getId() + "_" + new Date().getTime() + ".jpg");
+            File picture = new File(this.getId() + "_" + d.getTime() + ".jpg");
             FileOutputStream fis = new FileOutputStream(picture);
             InputStream is = uc.getInputStream();
             int read = 0;
@@ -56,7 +57,6 @@ public class Kamera extends Aktor {
                 read = is.read();
                 fis.write(read);
             }
-            d = new Date();
             snapshots.put(d, ImageIO.read(picture));
         }
         catch (Exception e){
@@ -64,10 +64,7 @@ public class Kamera extends Aktor {
 
         }
     }
-    //TODO:InetAdress?
-    /*public InetAddress getIp() {
-        return null;
-    }*/
+
     public String getIp() {
         return this.ip;
     }
