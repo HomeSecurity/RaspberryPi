@@ -1,16 +1,17 @@
 package webserver;
 
 import model.*;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import webserver.RequestClasses.*;
 import webserver.ResponseClasses.*;
+
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Tim on 10.06.2017.
@@ -61,12 +62,12 @@ public class WebController {
     }
 
     @RequestMapping(value = "/changecredentials", method = RequestMethod.POST)
-    public Boolean changecredentials(HttpSession session, HttpServletResponse response, @RequestBody Credentials input) {
+    public BooleanOutput changecredentials(HttpSession session, HttpServletResponse response, @RequestBody Credentials input) {
         if(!authorization(session,response)) {
             return null;
         }
             persistCredentials(input);
-        return true;
+        return new BooleanOutput(true);
     }
 
     @RequestMapping(value = "/rulelist", method = RequestMethod.GET)
@@ -138,11 +139,11 @@ public class WebController {
     }
 
     @RequestMapping(value = "/deleterule", method = RequestMethod.DELETE)
-    public Boolean deleterule(HttpSession session, HttpServletResponse response, @RequestParam(value = "id") int id) {
+    public BooleanOutput deleterule(HttpSession session, HttpServletResponse response, @RequestParam(value = "id") int id) {
         if(!authorization(session,response)) {
             return null;
         }
-        return Alarmsystem.getInstance().removeRulebyId(id);
+        return new BooleanOutput(Alarmsystem.getInstance().removeRulebyId(id));
     }
 
     @RequestMapping(value = "/componentlist", method = RequestMethod.GET)
@@ -154,12 +155,12 @@ public class WebController {
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
-    public Boolean registration(HttpSession session, HttpServletResponse response) {
+    public BooleanOutput registration(HttpSession session, HttpServletResponse response) {
         if(!authorization(session,response)) {
             return null;
         }
         Alarmsystem.getInstance().activateRegistrationMode();
-        return true;
+        return new BooleanOutput(true);
     }
 
     @RequestMapping(value = "/updatecomponent", method = RequestMethod.PUT)
@@ -186,14 +187,14 @@ public class WebController {
     }
 
     @RequestMapping(value = "/resetall", method = RequestMethod.DELETE)
-    public Boolean resetall(HttpSession session, HttpServletResponse response) {
+    public BooleanOutput resetall(HttpSession session, HttpServletResponse response) {
         if(!authorization(session,response)) {
             return null;
         }
         Credentials credentials = new Credentials("DefaultUser", "DefaultPassword");
         persistCredentials(credentials);
         Alarmsystem.getInstance().resetModel();
-        return true;
+        return new BooleanOutput(true);
     }
 
     @RequestMapping(value = "/addcamera", method = RequestMethod.POST)
@@ -215,22 +216,26 @@ public class WebController {
         return updatecomponent(session, response, kameraInput);
     }
 
-    @RequestMapping(value = "/notificationlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/notificationlist", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
     public Map<Integer, NotificationOutput> notificationlist(HttpSession session, HttpServletResponse response) {
         if (!authorization(session, response)) {
             return null;
         }
         HashMap<Date, Rule> notifications = Alarmsystem.getInstance().getNotifications();
         Map<Integer, NotificationOutput> output = new HashMap<>();
-        //NotificationOutput[] notificationOutputs = new NotificationOutput[notifications.size()];
         int i = 0;
         for(Map.Entry<Date, Rule> entry : notifications.entrySet()) {
             output.put(i, new NotificationOutput(entry.getKey(), entry.getValue().getId(), entry.getValue().isTriggered()));
-            //notificationOutputs[i] = new NotificationOutput(entry.getKey(), entry.getValue(), null);
             BufferedImage bufferedImage = entry.getValue().getPictureForDate(entry.getKey());
             if (bufferedImage != null) {
-                output.get(i).setImage(bufferedImage);
-                //notificationOutputs[i].setImage(bufferedImage);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                try {
+                    ImageIO.write(bufferedImage, "jpg", baos);
+                } catch(IOException e) {
+                    e.printStackTrace();
+                }
+                byte[] bytes = baos.toByteArray();
+                output.get(i).setImage(bytes);
             }
             i++;
         }
@@ -238,20 +243,20 @@ public class WebController {
     }
 
     @RequestMapping(value = "/resetalarm", method = RequestMethod.GET)
-    public Boolean resetalarm(HttpSession session, HttpServletResponse response) {
+    public BooleanOutput resetalarm(HttpSession session, HttpServletResponse response) {
         if (!authorization(session, response)) {
             return null;
         }
         Alarmsystem.getInstance().resetAlarm();
-        return true;
+        return new BooleanOutput(true);
     }
 
     @RequestMapping(value = "/settoken", method = RequestMethod.POST)
-    public Boolean settoken(HttpSession session, HttpServletResponse response, @RequestBody String token) {
+    public BooleanOutput settoken(HttpSession session, HttpServletResponse response, @RequestBody Token token) {
         /*if (!authorization(session, response)) {
             return null;
         }*/
-        Alarmsystem.getInstance().setToken(token);
-        return true;
+        Alarmsystem.getInstance().setToken(token.getToken());
+        return new BooleanOutput(true);
     }
 }

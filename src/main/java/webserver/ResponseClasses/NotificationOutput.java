@@ -1,12 +1,11 @@
 package webserver.ResponseClasses;
 
-import java.awt.image.BufferedImage;
 import java.util.Date;
 
 public class NotificationOutput {
     private Date date;
     private int ruleid;
-    private BufferedImage image;
+    private byte[] image;
     private boolean triggered;
 
     public NotificationOutput(){}
@@ -33,11 +32,11 @@ public class NotificationOutput {
         this.ruleid = ruleid;
     }
 
-    public BufferedImage getImage() {
+    public byte[] getImage() {
         return image;
     }
 
-    public void setImage(BufferedImage image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 
