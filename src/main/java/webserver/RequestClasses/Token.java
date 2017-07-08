@@ -1,5 +1,6 @@
 package webserver.RequestClasses;
 
+//class to convert a json object easily into a java class
 public class Token {
     private String token;
 

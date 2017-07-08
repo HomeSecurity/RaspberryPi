@@ -1,5 +1,7 @@
 package webserver.RequestClasses;
 
+//class to convert a json object easily into a java class
+//an original component would be to complex
 public class ComponentInput {
     private String name;
     private int id;

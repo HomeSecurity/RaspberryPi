@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * Created by Tim on 12.06.2017.
  */
+//class to convert a json object easily into a java class
 public class Credentials implements Serializable{
     private String username;
     private String password;

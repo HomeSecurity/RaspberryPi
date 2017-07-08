@@ -2,6 +2,7 @@ package webserver.ResponseClasses;
 
 import java.util.Date;
 
+//class to convert a java class easily into a json object
 public class NotificationOutput {
     private Date date;
     private int ruleid;
