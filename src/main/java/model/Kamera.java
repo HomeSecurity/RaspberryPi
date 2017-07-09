@@ -44,6 +44,7 @@ public class Kamera extends Aktor {
         });
 
         try {
+            //snapshot url for wansview ip cameras
             URL url = new URL("http://" + ip + "/mjpeg/snap.cgi?chn=0");
             System.out.println(url);
             URLConnection uc = url.openConnection();

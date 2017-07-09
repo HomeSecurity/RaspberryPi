@@ -56,6 +56,7 @@ public class Alarmsystem {
     }
 
     public void init() {
+        //throws FileNotFound Exception if the Alarmsystem is started for the first time, because the files dont exist
         ObjectInputStream objectinputstream = null;
         try {
             FileInputStream streamIn = new FileInputStream("components.ser");
@@ -171,7 +172,6 @@ public class Alarmsystem {
 
 
         //perform parsing the byte message
-        // not sure if message is String or byte array
         //if invalid message return false
 
         //1000 Tür

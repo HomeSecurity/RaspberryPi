@@ -7,7 +7,4 @@ public class Sirene extends Aktor{
     public Sirene(int id, double voltage) {
         super(id, voltage);
     }
-
-
-
 }
