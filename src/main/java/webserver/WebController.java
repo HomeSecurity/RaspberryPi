@@ -259,7 +259,7 @@ public class WebController {
     }
 
     //get all notifiacations
-    @RequestMapping(value = "/notificationlist", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+    @RequestMapping(value = "/notificationlist", method = RequestMethod.GET)
     public Map<Integer, NotificationOutput> notificationlist(HttpSession session, HttpServletResponse response) {
         if (!authorization(session, response)) {
             return null;
