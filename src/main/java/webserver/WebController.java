@@ -303,10 +303,9 @@ public class WebController {
     //therefore messages are now send to the entered device
     @RequestMapping(value = "/settoken", method = RequestMethod.POST)
     public BooleanOutput settoken(HttpSession session, HttpServletResponse response, @RequestBody Token token) {
-        //deactivated because of the mobile app
-        /*if (!authorization(session, response)) {
+        if (!authorization(session, response)) {
             return null;
-        }*/
+        }
         Alarmsystem.getInstance().setToken(token.getToken());
         return new BooleanOutput(true);
     }
